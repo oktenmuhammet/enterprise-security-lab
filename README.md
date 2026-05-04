@@ -1,146 +1,180 @@
-# Enterprise Security Lab (PCI DSS Oriented)
+# 🛡️ Enterprise Security Lab (PCI DSS Inspired)
 
-This project is a self-built enterprise-level cybersecurity lab designed to simulate a real-world PCI DSS environment.
-
-The goal is not only to build systems, but to design, secure, monitor, and detect threats like a real Security Operations Center (SOC).
+> A hands-on cybersecurity lab simulating a real-world enterprise environment with secure architecture, monitoring, detection, and response capabilities.
 
 ---
 
-## 🔐 Architecture Overview
+## 🔍 Overview
 
-The lab is segmented into multiple security zones:
+This project demonstrates a full enterprise-grade security lab designed based on PCI DSS principles.
 
-- **Internal Zone** → Active Directory, user machines  
-- **DMZ Zone** → Wazuh, Web Server, LDAP, Jump Server, Vault  
-- **CDE Zone (Cardholder Data Environment)** → App Server, Database  
-- **Attack Zone** → Kali Linux, Metasploitable  
-- **Backup Zone** → Backup Server  
+The environment simulates a real-world infrastructure including:
 
-All traffic is controlled via **pfSense firewall** with a default deny approach.
+- Segmented network architecture (Internal, DMZ, CDE, Attack, Backup)
+- Centralized monitoring & detection (Wazuh SIEM)
+- Secure payment application with encrypted data storage
+- Identity & access management (Active Directory, LDAP)
+- Network security controls (Firewall, IDS/IPS, WAF)
+- Vulnerability management and remediation lifecycle
 
----
-
-## 🧰 Technologies Used
-
-- SIEM: Wazuh  
-- Firewall: pfSense  
-- IDS/IPS: Suricata  
-- WAF: ModSecurity (Nginx)  
-- Identity: Active Directory, LDAP  
-- Secrets Management: HashiCorp Vault  
-- Vulnerability Scanning: Nessus  
-- Monitoring: Zabbix  
-- Antivirus: ClamAV / Windows Defender  
-- Network Time: Chrony (NTP)
+The goal is not just building systems, but securing, monitoring, and validating them against real attack scenarios.
 
 ---
 
-## 🧠 Key Features
+## 🗺️ Network Architecture
 
-- Network segmentation (Internal / DMZ / CDE / Attack / Backup)
-- Centralized logging & SIEM monitoring
+![Topology](./diagrams/topology.png)
+
+### Zones
+
+- **Internal Zone** → Active Directory, user machines
+- **DMZ Zone** → Wazuh, Web Server, Jump Server, Vault, LDAP
+- **CDE Zone** → Application server & Database (Cardholder data)
+- **Attack Zone** → Kali Linux, Metasploitable
+- **Backup Zone** → Backup server
+
+All traffic is controlled through **pfSense firewall** with a default deny approach.
+
+---
+
+## 🔧 Technologies & Purpose
+
+- **Wazuh** → SIEM + log correlation + detection
+- **pfSense** → Network segmentation & firewall enforcement
+- **Suricata** → IDS/IPS (network-level threat detection)
+- **ModSecurity (WAF)** → Protection against web attacks (SQLi, XSS)
+- **Active Directory** → Centralized identity management
+- **LDAP** → Authentication & directory services
+- **HashiCorp Vault** → Secret management & data encryption
+- **Nessus** → Vulnerability scanning & risk analysis
+- **ClamAV** → Malware detection
+- **Chrony (NTP)** → Time synchronization across systems
+
+---
+
+## 💳 Secure Payment Application
+
+- Payment form served via **Nginx (Reverse Proxy + WAF)**
+- Sensitive data handling:
+  - CVV is **never stored**
+  - PAN is **masked (truncated)**
+  - Data is encrypted before database insertion
+- Encryption:
+  - Managed via **HashiCorp Vault**
+  - AppRole-based authentication (no hardcoded secrets)
+- Database:
+  - MariaDB with encrypted records
+
+---
+
+## 🛡️ Security Controls
+
+- Network segmentation (multi-zone architecture)
+- Firewall rules (default deny)
+- IDS/IPS (Suricata inline mode)
+- Web Application Firewall (ModSecurity)
+- VPN access (OpenVPN)
+- MFA for privileged access
+- SSH hardening & RDP restrictions
+- Centralized time sync (NTP)
+- Endpoint protection (ClamAV / Windows Defender)
+
+---
+
+## 📡 Monitoring & Detection (SOC Perspective)
+
+- Centralized logging via **Wazuh SIEM**
 - File Integrity Monitoring (FIM)
-- Active Response (automated blocking)
 - Brute-force detection
-- Privilege escalation monitoring
-- LDAP & Active Directory integration
-- Secure secret management with Vault
-- WAF protection against web attacks
-- Malware detection (ClamAV)
-- Log retention aligned with PCI DSS
+- LDAP user activity monitoring
+- Root/admin activity tracking
+- WAF log analysis
+- Malware detection alerts
+- Active response (automatic blocking)
 
 ---
 
-## 💳 Payment Application Security
+## 🧪 Attack & Detection Scenario
 
-A simulated payment system was implemented:
+### Scenario:
+An attacker from the **Attack Zone (Kali Linux)** performs brute-force and enumeration attempts against internal systems.
 
-- Web server (Nginx + Reverse Proxy + WAF)
-- Backend application (Python)
-- Database (MariaDB)
+### Detection:
+- Wazuh detects multiple failed login attempts
+- Alerts generated with high severity
+- Logs correlated across endpoints
 
-Security controls:
+### Response:
+- Active response blocks attacker IP
+- Firewall rules updated dynamically
+- Alert notification sent (email)
 
-- CVV is **never stored**
-- PAN is **partially masked**
-- Sensitive data is **encrypted via HashiCorp Vault**
-- No hardcoded credentials (AppRole authentication)
-
----
-
-## 🔍 Threat Detection (SOC Perspective)
-
-Wazuh is used for centralized monitoring and detection:
-
-- Authentication logs
-- File changes (FIM)
-- Brute-force attacks
-- Suspicious command execution
-- LDAP activity
-- Malware-related file events
-
-Custom rules were written to improve detection accuracy.
+### Remediation:
+- Password policies enforced
+- Services hardened
+- Attack surface reduced
 
 ---
 
-## 💣 Attack Simulation
+## 🔍 Vulnerability Management
 
-Attacks were simulated from the Attack Zone:
-
-- Brute-force attacks (Hydra)
-- Suspicious file execution
-- Unauthorized access attempts
-
-All activities were monitored and detected via SIEM.
+- Scanning performed using **Nessus**
+- Focus on **High & Critical vulnerabilities**
+- Manual analysis of findings
+- Remediation applied
+- Re-scan to verify fixes
 
 ---
 
-## 📊 Vulnerability Management
+## 📊 Outcomes
 
-- Nessus scans performed on lab systems  
-- High & Critical vulnerabilities identified  
-- Remediation applied and re-tested  
-
----
-
-## 📸 Screenshots & Diagrams
-
-- Network topology → `/diagrams`
-- Data flow diagrams → `/diagrams`
-- Wazuh alerts → `/screenshots`
-- Dashboard views → `/screenshots`
+- Successfully detected brute-force and unauthorized access attempts
+- Built centralized monitoring across all systems
+- Implemented secure data handling practices
+- Reduced attack surface via segmentation and hardening
+- Simulated real-world SOC monitoring workflow
 
 ---
 
-## 🧱 Security Approach
+## 📌 PCI DSS Alignment
 
-This lab follows a layered security model:
-
-- Network segmentation  
-- Least privilege access  
-- Monitoring & alerting  
-- Detection & response  
-- Secure data handling  
+- **Requirement 1** → Firewall configuration (pfSense)
+- **Requirement 3** → Data protection (Vault encryption)
+- **Requirement 10** → Logging & monitoring (Wazuh)
+- **Requirement 11** → Vulnerability scanning (Nessus)
 
 ---
 
-## 🎯 Objective
+## 📸 Screenshots
 
-The purpose of this lab is to:
+### Wazuh Alert Example
+![Alert](./screenshots/wazuh-alert.png)
 
-- Simulate a real enterprise environment  
-- Understand how attacks are detected  
-- Build hands-on SOC & Security Engineering skills  
-
----
-
-## 🧠 Key Takeaway
-
-Building a system is easy.  
-Securing and monitoring it is the real challenge.
+### Wazuh Dashboard
+![Dashboard](./screenshots/wazuh-dashboard.png)
 
 ---
 
-## ⚠️ Disclaimer
+## 🎯 Key Takeaways
 
-This project is created for educational purposes only.
+- Building systems is easy — securing and monitoring them is the real challenge
+- Visibility is critical in cybersecurity
+- Defense-in-depth is essential
+- Detection & response are as important as prevention
+
+---
+
+## 🚀 Future Improvements
+
+- SOAR integration (automated response workflows)
+- Threat intelligence feeds integration
+- Advanced detection rules (custom correlation)
+- Cloud environment extension (AWS/Azure)
+
+---
+
+## 👤 Author
+
+**Muhammet Emin Okten**
+
+Cybersecurity enthusiast focused on Security Engineering & SOC operations.
